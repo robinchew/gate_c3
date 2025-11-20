@@ -7,6 +7,8 @@
 #define SERVICE_UUID        "2f49436e-3900-44ea-8837-8843708d9ef0"
 #define CHARACTERISTIC_UUID "d2cdedc3-53a3-4a0a-adc7-2b2bf7e757f3"
 
+const int INPUT_PIN_D1 = 3;
+
 BLECharacteristic *pCharacteristic;
 bool deviceConnected = false;
 
@@ -27,6 +29,8 @@ class MyServerCallbacks: public BLEServerCallbacks {
 
 void setup() {
   Serial.begin(115200);
+
+  pinMode(INPUT_PIN_D1, INPUT_PULLUP);
 
   // 1. Initialize BLE with a name
   BLEDevice::init("ESP32_BLE_MSG");
@@ -66,7 +70,13 @@ void loop() {
   if (deviceConnected) {
     
     // Create the message
-    char message[] = "Hello from BLE!";
+    //
+    int currentState = digitalRead(INPUT_PIN_D1);
+
+    const char* status = (currentState == 1) ? "HIGH" : "LOW";
+    char message[11];
+
+    snprintf(message, sizeof(message), "BLE = %s", status);
     
     // Update the value
     pCharacteristic->setValue(message);
