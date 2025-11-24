@@ -39,3 +39,28 @@ pio device monitor --dtr 0 --rts 0
 ```
 
 Both `--dtr` and `--rts` needs to be set 0. Having one zero and the other non-zero does not have any usecase for us.
+
+Following does NOT work
+-----------------------
+But looks like it should. Errors look like:
+
+wait usb download
+Disconnected (device reports readiness to read but returned no data (device disconnected or multiple access on port?))
+
+```cpp
+#include "driver/gpio.h"
+
+
+#include <WiFi.h>
+
+#define WAKEUP_PIN 3  // Assuming D0 is GPIO 0
+
+void setup() {
+Serial.begin(115200); // This is required for print to work
+  pinMode(WAKEUP_PIN, INPUT_PULLUP);  // Internal pull-up
+  esp_deep_sleep_enable_gpio_wakeup(1 << WAKEUP_PIN, ESP_GPIO_WAKEUP_GPIO_LOW);
+  esp_deep_sleep_start();
+}
+
+void loop() {}
+```
